@@ -18,7 +18,10 @@ import { APP_BASE_HREF } from '@angular/common';
 import {App} from './app/app.component';
 import {routes} from './app/app.routes';
 
+const stats = [];
+
 export function ngApp(req, res) {
+  var start = Date.now()
   let baseUrl = '/';
   let url = req.originalUrl || '/';
 
@@ -40,5 +43,11 @@ export function ngApp(req, res) {
     preboot: false // { appRoot: 'app' } // your top level app component selector
   };
 
-  res.render('index', config);
+  res.render('index', config, (err, html) => {
+    res.send(html);
+    const used = Date.now() - start
+    stats.push(used)
+    console.log(`request used: ${(Date.now() - start)}ms`)
+    console.log(`average: ${(stats.reduce((s, t) => s + t, 0) / stats.length).toFixed(2)}ms`)
+  });
 }
